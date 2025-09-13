@@ -25,7 +25,7 @@ SDL_Window* gWindow = NULL;
 SDL_Surface* gScreenSurface = NULL;
 
 //The image we will load and show on the screen
-SDL_Surface* gHelloWorld = NULL;
+SDL_Surface* gXOut = NULL;
 
 bool init()
 {
@@ -63,9 +63,9 @@ bool loadMedia()
 	bool success = true;
 
 	//Load splash image
-	char imgPath[] = "hello_world.bmp";
-	gHelloWorld = SDL_LoadBMP(imgPath);
-	if (gHelloWorld == NULL)
+	char imgPath[] = "x.bmp";
+	gXOut = SDL_LoadBMP(imgPath);
+	if (gXOut == NULL)
 	{
 		printf("Unable to load image %s! SDL Error: %s\n", imgPath, SDL_GetError());
 		success = false;
@@ -77,8 +77,8 @@ bool loadMedia()
 void close()
 {
 	//Deallocate surface
-	SDL_FreeSurface(gHelloWorld);
-	gHelloWorld = NULL;
+	SDL_FreeSurface(gXOut);
+	gXOut = NULL;
 
 	//Destroy window
 	SDL_DestroyWindow(gWindow);
@@ -104,14 +104,30 @@ int main(int argc, char* args[])
 		}
 		else
 		{
-			//Apply the image
-			SDL_BlitSurface(gHelloWorld, NULL, gScreenSurface, NULL);
+			//Main loop flag
+			bool quit = false;
 
-			//Update the surface
-			SDL_UpdateWindowSurface(gWindow);
+			//Event handler
+			SDL_Event e;
 
-			//Hack to get window to stay up
-			SDL_Event e; bool quit = false; while (quit == false) { while (SDL_PollEvent(&e)) { if (e.type == SDL_QUIT) quit = true; } }
+			//While application is running
+			while (!quit)
+			{
+				//Handle events on queue
+				while (SDL_PollEvent(&e) != 0)
+				{
+					//User requests quit
+					if (e.type == SDL_QUIT)
+					{
+						quit = true;
+					}
+				}
+				//Apply the image
+				SDL_BlitSurface(gXOut, NULL, gScreenSurface, NULL);
+
+				//Update the surface
+				SDL_UpdateWindowSurface(gWindow);
+			}
 		}
 	}
 
